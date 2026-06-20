@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#050816,#0b1026);
+}
+
+.box{
+width:380px;
+background:#0f1735;
+padding:30px;
+border-radius:15px;
+border:2px solid cyan;
+box-shadow:0 0 20px cyan;
+}
+
+h1{
+text-align:center;
+color:cyan;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+background:#182347;
+border:1px solid cyan;
+border-radius:8px;
+color:white;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:cyan;
+font-weight:bold;
+cursor:pointer;
+}
+
+p{
+text-align:center;
+margin-top:15px;
+color:white;
+}
+
+a{
+color:cyan;
+}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+<h1>⚡ Login</h1>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="loginUser()">Login</button>
+
+<p>
+Don't have an account?
+<a href="register.html">Register</a>
+</p>
+
+</div>
+
+<script>
+
+function loginUser(){
+
+let email=document.getElementById("email").value;
+let password=document.getElementById("password").value;
+
+let user=JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+alert("Please Register First");
+return;
+}
+
+if(email===user.email && password===user.password){
+
+localStorage.setItem("loggedIn","true");
+
+window.location.href="index.html";
+
+}else{
+
+alert("Invalid Email or Password");
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

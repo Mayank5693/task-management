@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Manager</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#050816,#0b1026,#121b3a);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+.navbar{
+    position:fixed;
+    top:20px;
+    right:30px;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:15px;
+    z-index:9999;
+    width:auto;
+}
+
+.logo{
+    display:none;
+}
+.navbar a{
+    text-decoration:none;
+    color:#00ffff;
+    border:1px solid #00ffff;
+    padding:10px 18px;
+    border-radius:8px;
+    background:rgba(0,0,0,0.4);
+    transition:.3s;
+}
+
+.navbar a:hover{
+    background:#00ffff;
+    color:black;
+    box-shadow:0 0 15px #00ffff;
+}
+
+.container{
+    width:100%;
+    max-width:850px;
+    background:rgba(8,12,30,0.95);
+    border:2px solid #00ffff;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 0 25px #00ffff;
+}
+
+h1{
+    text-align:center;
+    color:#00ffff;
+    text-shadow:0 0 20px #00ffff;
+    margin-bottom:25px;
+}
+
+.top-bar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+input{
+    flex:1;
+    min-width:200px;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #00ffff;
+    background:#0d1430;
+    color:white;
+    outline:none;
+}
+
+input:focus{
+    box-shadow:0 0 15px #00ffff;
+}
+
+button{
+    border:none;
+    border-radius:10px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.add-btn{
+    background:#00ffff;
+    color:black;
+}
+
+.add-btn:hover{
+    box-shadow:0 0 20px #00ffff;
+    transform:scale(1.05);
+}
+
+.task{
+    background:#101935;
+    border:1px solid #00ffff;
+    border-radius:12px;
+    padding:15px;
+    margin-top:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.task-text{
+    font-size:18px;
+}
+
+.completed{
+    text-decoration:line-through;
+    color:#00ff88;
+    text-shadow:0 0 8px #00ff88;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+}
+
+.complete-btn{
+    background:#00ff88;
+}
+
+.delete-btn{
+    background:#ff3b6b;
+    color:white;
+}
+
+.complete-btn:hover{
+    box-shadow:0 0 15px #00ff88;
+}
+
+.delete-btn:hover{
+    box-shadow:0 0 15px #ff3b6b;
+}
+
+.stats{
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.card{
+    text-align:center;
+    padding:15px;
+    border-radius:12px;
+    background:#101935;
+}
+
+.card:nth-child(1){
+    border:1px solid #00ffff;
+    box-shadow:0 0 10px #00ffff;
+}
+
+.card:nth-child(2){
+    border:1px solid #00ff88;
+    box-shadow:0 0 10px #00ff88;
+}
+
+.card:nth-child(3){
+    border:1px solid #ff00ff;
+    box-shadow:0 0 10px #ff00ff;
+}
+
+.card h2{
+    margin-top:10px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#999;
+}
+
+@media(max-width:600px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .task{
+        flex-direction:column;
+        gap:10px;
+        align-items:flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    
+<nav class="navbar">
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+</nav>
+<h1>⚡ TASK MANAGER ⚡</h1>
+
+<div class="top-bar">
+<input type="text" id="taskInput" placeholder="Enter a task...">
+<button class="add-btn" onclick="addTask()">Add Task</button>
+</div>
+
+<div id="taskList"></div>
+
+<div class="stats">
+
+<div class="card">
+<h3>Total Tasks</h3>
+<h2 id="total">0</h2>
+</div>
+
+<div class="card">
+<h3>Completed</h3>
+<h2 id="completed">0</h2>
+</div>
+
+<div class="card">
+<h3>Pending</h3>
+<h2 id="pending">0</h2>
+</div>
+
+</div>
+
+<div class="footer">
+Made by Mayank Srivastav 🚀
+</div>
+
+</div>
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks(){
+    localStorage.setItem("tasks",JSON.stringify(tasks));
+}
+
+function addTask(){
+
+    let input=document.getElementById("taskInput");
+
+    if(input.value.trim()===""){
+        alert("Enter a task");
+        return;
+    }
+
+    tasks.push({
+        text:input.value,
+        completed:false
+    });
+
+    input.value="";
+    renderTasks();
+}
+
+function deleteTask(index){
+    tasks.splice(index,1);
+    renderTasks();
+}
+
+function toggleTask(index){
+    tasks[index].completed=!tasks[index].completed;
+    renderTasks();
+}
+
+function renderTasks(){
+
+    let taskList=document.getElementById("taskList");
+    taskList.innerHTML="";
+
+    let completedCount=0;
+
+    tasks.forEach((task,index)=>{
+
+        if(task.completed) completedCount++;
+
+        taskList.innerHTML+=`
+        <div class="task">
+
+            <div class="task-text ${task.completed ? 'completed':''}">
+                ${task.text}
+            </div>
+
+            <div class="actions">
+                <button class="complete-btn"
+                onclick="toggleTask(${index})">
+                ✓
+                </button>
+
+                <button class="delete-btn"
+                onclick="deleteTask(${index})">
+                Delete
+                </button>
+            </div>
+
+        </div>
+        `;
+    });
+
+    document.getElementById("total").innerText=tasks.length;
+    document.getElementById("completed").innerText=completedCount;
+    document.getElementById("pending").innerText=
+    tasks.length-completedCount;
+
+    saveTasks();
+}
+
+renderTasks();
+
+</script>
+
+</body>
+</html>
